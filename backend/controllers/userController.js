@@ -7,13 +7,18 @@ import jwt from "jsonwebtoken"
 
 export const registerUser = async (req, res) => {
     try {
+        console.log("Register endpoint hit"); // Debug log
+        console.log("Request body:", req.body); // Debug log
+
         const { username, email, password } = req.body;
         if (!username || !email || !password) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
             })
-        }
+        } 
+
+        console.log("Checking existing user..."); // Debug log
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             return res.status(400).json({
@@ -21,6 +26,8 @@ export const registerUser = async (req, res) => {
                 message: "User already exists"
             })
         }
+
+        console.log("Creating new user..."); // Debug log
         const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = await User.create({
             username,
@@ -31,12 +38,15 @@ export const registerUser = async (req, res) => {
         verifyMail(token, email)
         newUser.token = token
         await newUser.save()
+
+        console.log("User registration completed"); // Debug log
         return res.status(201).json({
             success: true,
             message: "User registered successfully",
             data: newUser
         })
     } catch (error) {
+        console.error("Registration error:", error); // Debug log   
         return res.status(500).json({
             success: false,
             message: error.message
@@ -120,13 +130,13 @@ export const loginUser = async (req, res) => {
             })
         }
 
-        //check if user is verified 
-        if (user.isVerified !== true) {
-            return res.status(403).json({
-                success: false,
-                message: "Verify your account than login"
-            })
-        }
+        // //check if user is verified 
+        // if (user.isVerified !== true) {
+        //     return res.status(403).json({
+        //         success: false,
+        //         message: "Verify your account than login"
+        //     })
+        // }
 
         // check for existing session and delete it
         const existingSession = await Session.findOne({ userId: user._id });
