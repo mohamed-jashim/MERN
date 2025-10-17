@@ -130,14 +130,6 @@ export const loginUser = async (req, res) => {
             })
         }
 
-        // //check if user is verified 
-        // if (user.isVerified !== true) {
-        //     return res.status(403).json({
-        //         success: false,
-        //         message: "Verify your account than login"
-        //     })
-        // }
-
         // check for existing session and delete it
         const existingSession = await Session.findOne({ userId: user._id });
         if (existingSession) {
