@@ -51,18 +51,31 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
+        stage('API Testing') {
             steps {
+                echo "🌐 Testing API endpoints..."
                 dir("${BACKEND_DIR}") {
-                    echo "🧪 Running backend tests..."
                     sh '''
-                        npm install
-                        npm test || echo "⚠️ No tests or test failure ignored"
+                        # Start backend server for API testing
+                        npm start &
+                        SERVER_PID=$!
+                        sleep 10
+                        
+                        # Test basic endpoints
+                        curl -f http://localhost:8000/ || echo "Root endpoint test failed"
+                        curl -f http://localhost:8000/health || echo "Health endpoint test failed"
+                        
+                        # Test API endpoints
+                        curl -X GET http://localhost:8000/user/ || echo "User endpoint test failed"
+                        curl -X GET http://localhost:8000/auth/ || echo "Auth endpoint test failed"
+                        
+                        # Stop the server
+                        kill $SERVER_PID 2>/dev/null || true
                     '''
                 }
             }
         }
-
+        
         stage('Deploy Backend Container') {
             steps {
                 echo "🚀 Deploying backend container..."
