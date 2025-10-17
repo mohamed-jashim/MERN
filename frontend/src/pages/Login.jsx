@@ -40,7 +40,7 @@ const Login = () => {
         console.log(formData);
         try {
             setIsLoading(true)
-            const res = await axios.post(`http://localhost:8000/user/login`, formData, {
+            const res = await axios.post(`/user/login`, formData, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -132,7 +132,7 @@ const Login = () => {
                                         ) : "Login"
                                     }
                                 </Button>
-                                <Button onClick={()=>window.open("http://localhost:8000/auth/google", "_self")} className='w-full' variant='outline'>
+                                <Button onClick={()=>window.open("/auth/google", "_self")} className='w-full' variant='outline'>
                                     <img src={Google} alt="" className='w-5'/>
                                     Login with Google
                                     </Button>
